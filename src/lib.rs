@@ -3,7 +3,9 @@ use std::io::Read;
 
 const DEFAULT_BUFFER_SIZE: usize = 64 * 1024;
 
+/// Count zeroes in something.
 pub trait CountZeroes<P> {
+    /// Count zeroes in `&mut self` and report `progress` at every iteration.
     fn count_zeroes(&mut self, progress: P) -> Result<(u64, u64), std::io::Error>;
 }
 
