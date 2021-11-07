@@ -76,6 +76,7 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
             display_progress!(zeroes, count);
             t1 = std::time::Instant::now();
         }
+        true
     })?;
 
     display_progress!(zeroes, count);

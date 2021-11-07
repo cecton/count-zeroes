@@ -9,7 +9,7 @@ pub trait CountZeroes<P> {
     fn count_zeroes(&mut self, progress: P) -> Result<(u64, u64), std::io::Error>;
 }
 
-impl<R: Read, P: FnMut(u64, u64)> CountZeroes<P> for std::io::BufReader<R> {
+impl<R: Read, P: FnMut(u64, u64) -> bool> CountZeroes<P> for std::io::BufReader<R> {
     fn count_zeroes(&mut self, mut progress: P) -> Result<(u64, u64), std::io::Error> {
         let mut zeroes: u64 = 0;
         let mut count: u64 = 0;
@@ -24,7 +24,9 @@ impl<R: Read, P: FnMut(u64, u64)> CountZeroes<P> for std::io::BufReader<R> {
             count += len as u64;
             zeroes += buffer.iter().filter(|&&x| x == 0).count() as u64;
 
-            progress(zeroes, count);
+            if !progress(zeroes, count) {
+                break;
+            }
 
             self.consume(len);
         }
@@ -33,7 +35,7 @@ impl<R: Read, P: FnMut(u64, u64)> CountZeroes<P> for std::io::BufReader<R> {
     }
 }
 
-impl<P: FnMut(u64, u64)> CountZeroes<P> for std::fs::File {
+impl<P: FnMut(u64, u64) -> bool> CountZeroes<P> for std::fs::File {
     fn count_zeroes(&mut self, progress: P) -> Result<(u64, u64), std::io::Error> {
         let mut reader = std::io::BufReader::with_capacity(DEFAULT_BUFFER_SIZE, self);
 
@@ -43,7 +45,7 @@ impl<P: FnMut(u64, u64)> CountZeroes<P> for std::fs::File {
 
 impl<R: Read> CountZeroes<()> for std::io::BufReader<R> {
     fn count_zeroes(&mut self, _progress: ()) -> Result<(u64, u64), std::io::Error> {
-        self.count_zeroes(|_zeroes: u64, _count: u64| ())
+        self.count_zeroes(|_zeroes: u64, _count: u64| true)
     }
 }
 
