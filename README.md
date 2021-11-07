@@ -3,6 +3,14 @@ count-zeroes
 
 Count zeroes on a disk or a file.
 
+Installation & Usage
+--------------------
+
+```
+cargo install count-zeroes
+count-zeroes /dev/sdXN
+```
+
 Purpose
 -------
 
